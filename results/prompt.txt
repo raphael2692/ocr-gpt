@@ -1,0 +1,1 @@
+You can click on the "Posta" button to create a new email.

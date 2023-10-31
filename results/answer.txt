@@ -1,0 +1,49 @@
+# Error handling with appropriate http codes for all methods
+
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class EncodedImage(BaseModel):
+    data: str
+
+@app.post("/process_extract_text")
+async def process_extract_text(encoded_image: EncodedImage):
+    try:
+        image = decode_image(encoded_image.data)
+        text = extract_text(image)
+        if len(text) < 5:
+            raise HTTPException(status_code=501, detail="Can't extract any text")
+        return text
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/process_answer_quiz")
+async def process_answer_quiz(text: str):
+    try:
+        return answer_quiz(text)
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/process_extract_predict")
+async def process_extract_predict(encoded_image: EncodedImage):
+    try:
+        image = decode_image(encoded_image.data)
+        text = extract_text(image)
+        if len(text) < 5:
+            raise HTTPException(status_code=501, detail="Can't extract any text")
+        return predict(text)
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")

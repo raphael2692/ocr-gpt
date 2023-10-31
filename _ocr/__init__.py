@@ -3,6 +3,7 @@ import cv2
 from typing import Protocol
 import base64
 import numpy as np
+from .utils import download_image, read_image
 
 def cleanup_text(text):
 	# strip out non-ASCII text so we can draw the text on the image
@@ -21,7 +22,7 @@ def decode_image_from_txt(txt_path:str):
 
 def decode_image(encoded_img:str):
     # Decode the base64-encoded image to bytes
-    decoded_img = base64.b64decode(encoded_img)
+    decoded_img = base64.b64decode(str(encoded_img))
     # Convert the bytes to a NumPy array
     np_arr = np.frombuffer(decoded_img, dtype=np.uint8)
     # Decode the NumPy array using OpenCV
@@ -34,7 +35,7 @@ def encode_image(image):
     encoded_img = base64.b64encode(img_bytes).decode('utf-8')
     return encoded_img
 
-def extract_text(opencv_image, cutoff=0.5, langs=['en'], gpu=False):
+def extract_text(opencv_image, cutoff=0.2, langs=['en'], gpu=False):
 
     reader = Reader(langs, gpu)
     results = reader.readtext(opencv_image)
@@ -52,3 +53,4 @@ def extract_text(opencv_image, cutoff=0.5, langs=['en'], gpu=False):
 # TEST
 # image = decode_image_from_txt('C:\\dev\\easy-ocr-api\\base64.txt')
 # print(extract_text(image))
+

@@ -1,0 +1,32 @@
+```python
+# Add error handling with appropriate HTTP codes to all methods
+
+@app.post("/process_extract_text")
+async def process_extract_text(encoded_image: EncodedImage):
+    try:
+        image = decode_image(encoded_image.data)
+        text = extract_text(image)
+        if len(text) < 5:
+            raise HTTPException(status_code=501, detail="Can't extract any text")
+        return text
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/process_answer_quiz")
+async def process_answer_quiz(text: str):
+    try:
+        return answer_quiz(text)
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/process_extract_predict")
+async def process_extract_predict(encoded_image: EncodedImage):
+    try:
+        image = decode_image(encoded_image.data)
+        text = extract_text(image)
+        if len(text) < 5:
+            raise HTTPException(status_code=501, detail="Can't extract any text")
+        return predict(text)
+    except:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+```
